@@ -1,0 +1,13 @@
+# netlify.toml – Netlify deployment configuration
+# This file is optional but ensures clean URL handling.
+
+[build]
+  # The folder Netlify should publish (the workspace root in this case)
+  publish = "."
+
+# Redirect rule: if Netlify can't find a file, serve index.html
+# (not strictly needed for a fully static site, but good practice)
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

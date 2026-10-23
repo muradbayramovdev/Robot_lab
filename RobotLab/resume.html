@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Robot Lab – Layihə Xülasəsi</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet" />
+
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Screen styles ── */
+    html {
+      background: #0f172a;
+      min-height: 100%;
+    }
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.55;
+      color: #e8eaf0;
+      background: transparent;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    /* ── Print instruction banner (screen only) ── */
+    .print-hint {
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      border-radius: 10px;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.8rem;
+      color: #00e5ff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      max-width: 794px;
+      width: 100%;
+    }
+    .print-hint kbd {
+      background: rgba(0, 229, 255, 0.15);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+    .print-hint a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* ── A4 page card ── */
+    .page {
+      width: 794px;          /* A4 at 96dpi */
+      min-height: 1123px;    /* A4 height   */
+      background: #0d1b2a;
+      border: 1px solid #1e3a4a;
+      border-radius: 12px;
+      padding: 40px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle circuit-board corner decorations */
+    .page::before,
+    .page::after {
+      content: '';
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border: 1px solid rgba(0, 229, 255, 0.2);
+    }
+    .page::before { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 12px 0 0 0; }
+    .page::after  { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 12px 0; }
+
+    /* ── Header ── */
+    .resume-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1.5rem;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #1e3a4a;
+      margin-bottom: 22px;
+    }
+    .header-left {}
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .logo-box {
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(0, 229, 255, 0.5);
+      border-radius: 8px;
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .header-name {
+      font-size: 22pt;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+    .header-tagline {
+      font-size: 9pt;
+      color: #00e5ff;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .header-right {
+      text-align: right;
+      font-size: 8.5pt;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.8;
+      flex-shrink: 0;
+    }
+    .header-right strong {
+      color: #00e5ff;
+      font-weight: 600;
+    }
+
+    /* ── Two-column layout ── */
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 200px;
+      gap: 28px;
+      flex: 1;
+    }
+
+    /* ── Section block ── */
+    .section {
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 7.5pt;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #00e5ff;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #1e3a4a;
+    }
+
+    /* ── About text ── */
+    .about-text {
+      font-size: 9.5pt;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.65;
+    }
+    .about-text strong { color: #00e5ff; font-weight: 600; }
+
+    /* ── Projects ── */
+    .project-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 10px 12px;
+      border: 1px solid #1e3a4a;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: rgba(0,0,0,0.2);
+    }
+    .project-item:last-child { margin-bottom: 0; }
+    .project-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .project-name {
+      font-size: 10pt;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .project-chip {
+      font-size: 7.5pt;
+      font-weight: 600;
+      color: #00e5ff;
+      background: rgba(0,229,255,0.08);
+      border: 1px solid rgba(0,229,255,0.25);
+      border-radius: 999px;
+      padding: 1px 7px;
+      white-space: nowrap;
+    }
+    .project-desc {
+      font-size: 8.5pt;
+      color: rgba(255,255,255,0.60);
+      line-height: 1.5;
+    }
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .tag {
+      font-size: 7pt;
+      font-weight: 600;
+      color: rgba(0,229,255,0.8);
+      border: 1px solid rgba(0,229,255,0.2);
+      border-radius: 999px;
+      padding: 1px 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Achievements (right column) ── */
+    .achievement-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid #1e3a4a;
+      border-radius: 8px;
+      margin-bottom: 7px;
+      background: rgba(0,0,0,0.2);
+    }
+    .achievement-icon {
+      font-size: 14px;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .achievement-text { font-size: 8.5pt; color: rgba(255,255,255,0.75); line-height: 1.45; }
+    .achievement-text strong { color: #ffffff; font-weight: 600; display: block; margin-bottom: 1px; }
+
+    /* ── Skills ── */
+    .skills-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .skill-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .skill-label {
+      font-size: 7.5pt;
+      color: rgba(255,255,255,0.55);
+      font-weight: 500;
+    }
+    .skill-bar-track {
+      height: 4px;
+      background: #1e3a4a;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .skill-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00e5ff, #00ff88);
+      border-radius: 999px;
+    }
+
+    /* ── Footer bar ── */
+    .resume-footer {
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid #1e3a4a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 7.5pt;
+      color: rgba(255,255,255,0.35);
+    }
+    .resume-footer strong { color: rgba(0,229,255,0.7); font-weight: 600; }
+
+    /* ── Cyan accent dot ── */
+    .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00e5ff;
+      margin-right: 5px;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════════════════════
+       PRINT STYLES  — applied when Ctrl+P is triggered
+       ══════════════════════════════════════════════════ */
+    @media print {
+      /* Hide the hint banner */
+      .print-hint { display: none !important; }
+
+      html, body {
+        background: #0d1b2a !important;
+        padding: 0;
+        margin: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      body {
+        display: block;
+      }
+
+      .page {
+        width: 100%;
+        min-height: auto;
+        border: none;
+        border-radius: 0;
+        padding: 24px 32px;
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+
+      /* Ensure backgrounds and colors print */
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+
+    /* ── Responsive (small screens) ── */
+    @media (max-width: 840px) {
+      body { padding: 1rem; }
+      .page { width: 100%; min-height: auto; padding: 24px 20px; }
+      .columns { grid-template-columns: 1fr; }
+      .print-hint { max-width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Print instruction banner ── -->
+  <div class="print-hint" role="note">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="7" stroke="#00e5ff" stroke-width="1.2"/>
+      <line x1="8" y1="5" x2="8" y2="9" stroke="#00e5ff" stroke-width="1.4" stroke-linecap="round"/>
+      <circle cx="8" cy="11.5" r="0.7" fill="#00e5ff"/>
+    </svg>
+    PDF kimi saxlamaq üçün:
+    <kbd>Ctrl</kbd> + <kbd>P</kbd> → "Destination" → <strong>"Save as PDF"</strong> seç →
+    "More settings" → <strong>Background graphics</strong> işarələ → Saxla.
+    &nbsp;·&nbsp;
+    <a href="index.html">← Sayta qayıt</a>
+  </div>
+
+  <!-- ══════════════ A4 PAGE ══════════════ -->
+  <div class="page">
+
+    <!-- ── HEADER ── -->
+    <header class="resume-header">
+      <div class="header-left">
+        <div class="header-logo">
+          <!-- RL circuit logo -->
+          <div class="logo-box">
+            <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <polyline points="4,12 4,6 10,6"   stroke="#00e5ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="22,6 28,6 28,12"  stroke="#00e5ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="4,20 4,26 10,26"  stroke="#00e5ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="22,26 28,26 28,20" stroke="#00e5ff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="4" cy="6" r="1.2" fill="#00e5ff"/>
+              <circle cx="28" cy="6" r="1.2" fill="#00e5ff"/>
+              <circle cx="4" cy="26" r="1.2" fill="#00e5ff"/>
+              <circle cx="28" cy="26" r="1.2" fill="#00e5ff"/>
+              <text x="16" y="20.5" font-family="'Inter',sans-serif" font-size="10"
+                    font-weight="800" fill="white" text-anchor="middle" letter-spacing="-0.5">RL</text>
+            </svg>
+          </div>
+          <div>
+            <div class="header-name">Robot Lab</div>
+          </div>
+        </div>
+        <div class="header-tagline">Gənc Robototexnika Mühəndisi · Azərbaycan</div>
+      </div>
+
+      <div class="header-right">
+        <div><strong>Əlaqə</strong></div>
+        <div>WhatsApp: 077-505-77-72</div>
+        <div>Azərbaycan</div>
+        <div style="margin-top:4px"><strong>robot-lab.netlify.app</strong></div>
+      </div>
+    </header>
+
+    <!-- ── TWO-COLUMN BODY ── -->
+    <div class="columns">
+
+      <!-- LEFT COLUMN -->
+      <div>
+
+        <!-- About -->
+        <div class="section">
+          <div class="section-title">Haqqımda</div>
+          <p class="about-text">
+            Salam! Mən robototexnika, elektronika və innovativ texnologiyalara böyük
+            marağı olan gənc layihə tərtibatçısıyam. Rusiyada anadan olmuşam və
+            hazırda fəaliyyətimi Azərbaycanda davam etdirirəm.
+            <strong>Təxminən 4 ildir</strong> robototexnika dünyasındayam,
+            son <strong>2 ili</strong> daha sistemli tədqiqatlara həsr etmişəm.
+            Həm elektronika, həm proqram layihələri üzərində çalışaraq mühəndislik
+            bacarıqlarımı, alqoritmik düşüncəmi inkişaf etdirmişəm.
+          </p>
+        </div>
+
+        <!-- Projects -->
+        <div class="section">
+          <div class="section-title">Layihələrim</div>
+
+          <div class="project-item">
+            <div class="project-top">
+              <span class="project-name">LineBot 3000</span>
+              <span class="project-chip">Arduino Uno</span>
+            </div>
+            <div class="project-desc">
+              Avtomatik xətt izləyən robot. İki IR sensor + PID idarəetmə. Məktəb yarışı üçün inşa edilib.
+            </div>
+            <div class="project-tags">
+              <span class="tag">C++</span>
+              <span class="tag">PID</span>
+              <span class="tag">IR Sensors</span>
+              <span class="tag">DC Motors</span>
+            </div>
+          </div>
+
+          <div class="project-item">
+            <div class="project-top">
+              <span class="project-name">ArmBot MK1</span>
+              <span class="project-chip">Arduino Mega</span>
+            </div>
+            <div class="project-desc">
+              3-DOF lazer kəsilmiş akril qol robotu. EEPROM-a yazılmış hərəkət ardıcıllığı ilə avtomatik oynatma.
+            </div>
+            <div class="project-tags">
+              <span class="tag">Servo</span>
+              <span class="tag">EEPROM</span>
+              <span class="tag">3D Print</span>
+              <span class="tag">Joystick</span>
+            </div>
+          </div>
+
+          <div class="project-item">
+            <div class="project-top">
+              <span class="project-name">SonarRover</span>
+              <span class="project-chip">ESP32</span>
+            </div>
+            <div class="project-desc">
+              Wi-Fi üzərindən idarə olunan maneə aşma roveri. HC-SR04 sonar + daxili veb server.
+            </div>
+            <div class="project-tags">
+              <span class="tag">ESP32</span>
+              <span class="tag">Wi-Fi</span>
+              <span class="tag">Ultrasonic</span>
+              <span class="tag">Web Server</span>
+            </div>
+          </div>
+
+        </div><!-- /projects -->
+
+        <!-- Goals -->
+        <div class="section">
+          <div class="section-title">Gələcək Hədəflərim</div>
+          <p class="about-text">
+            Robototexnika və proqramlaşdırma sahəsində daha qlobal layihələrdə iştirak etmək,
+            peşəkar mühəndislər və mentorlarla tanış olmaq, startap layihələri həyata keçirmək.
+          </p>
+        </div>
+
+      </div><!-- /left column -->
+
+      <!-- RIGHT COLUMN -->
+      <div>
+
+        <!-- Achievements -->
+        <div class="section">
+          <div class="section-title">Nailiyyətlər</div>
+
+          <div class="achievement-item">
+            <span class="achievement-icon">🥇</span>
+            <div class="achievement-text">
+              <strong>1-ci Yer</strong>
+              Liseylərarası robototexnika turniri
+            </div>
+          </div>
+
+          <div class="achievement-item">
+            <span class="achievement-icon">🏅</span>
+            <div class="achievement-text">
+              <strong>3-cü &amp; 4-cü Yerlər</strong>
+              Digər regional robototexnika yarışları
+            </div>
+          </div>
+
+          <div class="achievement-item">
+            <span class="achievement-icon">📜</span>
+            <div class="achievement-text">
+              <strong>5 Sertifikat</strong>
+              Robototexnika və texnologiya sahəsində
+            </div>
+          </div>
+
+          <div class="achievement-item">
+            <span class="achievement-icon">🏆</span>
+            <div class="achievement-text">
+              <strong>1 Medal</strong>
+              Yarış nailiyyəti
+            </div>
+          </div>
+
+          <div class="achievement-item">
+            <span class="achievement-icon">💻</span>
+            <div class="achievement-text">
+              <strong>2 Proqram Layihəsi</strong>
+              Müstəqil hazırlanmış
+            </div>
+          </div>
+
+          <div class="achievement-item">
+            <span class="achievement-icon">🤖</span>
+            <div class="achievement-text">
+              <strong>3 Yarış</strong>
+              Aktiv iştirak
+            </div>
+          </div>
+
+        </div><!-- /achievements -->
+
+        <!-- Skills -->
+        <div class="section">
+          <div class="section-title">Texniki Bacarıqlar</div>
+          <div class="skills-grid">
+            <div class="skill-row">
+              <div class="skill-label">Arduino / C++</div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:90%"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-label">ESP32 / Wi-Fi</div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:80%"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-label">Elektronika / Dövrə</div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:78%"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-label">3D Print / CAD</div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:65%"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-label">HTML / CSS / JS</div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:70%"></div></div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-label">Python (öyrənilir)</div>
+              <div class="skill-bar-track"><div class="skill-bar-fill" style="width:45%"></div></div>
+            </div>
+          </div>
+        </div><!-- /skills -->
+
+      </div><!-- /right column -->
+    </div><!-- /columns -->
+
+    <!-- ── FOOTER ── -->
+    <footer class="resume-footer">
+      <span>
+        <strong>Robot Lab</strong> · robot-lab.netlify.app
+      </span>
+      <span>
+        Robototexnika · Elektronika · Proqramlaşdırma
+      </span>
+      <span>© 2026</span>
+    </footer>
+
+  </div><!-- /page -->
+
+</body>
+</html>
